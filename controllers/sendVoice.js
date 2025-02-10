@@ -9,7 +9,7 @@ export const sendVoice = async (chatId, fileName) => {
     try {
         const formData = new FormData();
         formData.append('chat_id', chatId);
-        formData.append('voice', fs.createReadStream(`./voices/${fileName}.mp3`))
+        formData.append('voice', fs.createReadStream(`voices/${fileName}.mp3`))
 
         const config = {
             method: 'post',

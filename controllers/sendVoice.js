@@ -1,17 +1,15 @@
 import axios from "axios"
 import dotenv from "dotenv"
 import FormData from "form-data"
+import fs from 'fs'
 
 dotenv.config()
 
-export const sendVoice = async (messageObj) => {
+export const sendVoice = async (chatId, fileName) => {
     try {
-        const chatId = messageObj.chat.id
-        const userMessage = messageObj.text
-
         const formData = new FormData();
         formData.append('chat_id', chatId);
-        formData.append('voice', fs.createReadStream(`../voices/${chatId}.mp3`))
+        formData.append('voice', fs.createReadStream(`voices/${fileName}.mp3`))
 
         const config = {
             method: 'post',

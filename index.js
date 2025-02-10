@@ -1,12 +1,10 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import { sendMessage } from "./controllers/SendMessage.js"
-import { groq } from "./config.js"
-import { sendVoice } from "./controllers/sendVoice.js"
-import fs from "fs"
-import FormData from "form-data"
-import axios from "axios"
+import { sendMessage } from "./controllers/sendMessage.js"
+import { getVoice } from "./controllers/getVoice.js"
+import { transcriptVoice } from "./controllers/transcriptVoice.js"
+import { generateAnswer } from './utils/generateAnswer.js'
 
 dotenv.config()
 
@@ -21,53 +19,34 @@ app.get('/', (req, res) => res.send('Server is running...'))
 app.post('*', async (req, res) => {
     console.log(req.body.message)
     if (req.body.message) {
-        const messageText = req.body.message.text
+        const message = req.body.message
 
-        if (messageText.startsWith('/')) {
-            const text = messageText.slice(1)
+        if (message.text) {
+            const messageText = message.text
 
-            if (text === 'start') {
-                sendMessage(req.body.message, 'go to sleep')
-                return res.send('ok').status(200)
-            } 
-            else if (text === 'voice') {
-                const formData = new FormData();
-                formData.append('chat_id', req.body.message.chat.id);
-                formData.append('voice', fs.createReadStream('v.mp3'));
+            if (messageText.startsWith('/')) {
+                const text = messageText.slice(1)
 
-                const config = {
-                    method: 'post',
-                    url: `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendVoice`,
-                    headers: {
-                    ...formData.getHeaders(),
-                    },
-                    data: formData,
-                };
-
-                const response = await axios(config);
+                if (text === 'start') {
+                    sendMessage(message.chat.id, 'go to sleep')
+                    return res.send('ok').status(200)
+                } 
+                else if (text === 'voice') {
+                    return res.send('ok').status(200)
+                }
+            } else {
+                const answer = await generateAnswer(messageText)
+                sendMessage(message.chat.id, answer)
+                console.log(req.body)
                 return res.send('ok').status(200)
             }
-        } else {
-            const chatCompletion = await groq.chat.completions.create({
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "Your name is d3fault. You give sarcastic replies to the user in a short manner."
-                    },
-                    {
-                        "role": "user",
-                        "content": messageText
-                    }
-                ],
-                "model": "llama3-8b-8192",
-                "temperature": 1,
-                "max_completion_tokens": 1024,
-                "top_p": 1,
-                "stream": false,
-                "stop": null
-            })
-            
-            sendMessage(req.body.message, chatCompletion.choices[0].message.content)
+        } else if(message.voice) {
+            const fileId = message.voice.file_id
+            const chatId = message.chat.id
+            await getVoice(fileId, chatId)
+            // const userMessage = await transcriptVoice(fileId)
+            // const answer = await generateAnswer(userMessage)
+            // await sendMessage(message.chat.id, answer)
             return res.send('ok').status(200)
         }
     }

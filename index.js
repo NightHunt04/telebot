@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import { sendMessage } from "./controllers/sendMessage.js"
+import { sendMessage } from "./controllers/SendMessage.js"
 import { getVoice } from "./controllers/getVoice.js"
 import { transcriptVoice } from "./controllers/transcriptVoice.js"
 import { generateAnswer } from './utils/generateAnswer.js'

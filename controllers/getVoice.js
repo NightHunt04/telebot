@@ -4,7 +4,7 @@ import fs from 'fs'
 
 import { transcriptVoice } from "./transcriptVoice.js"
 import { generateAnswer } from '../utils/generateAnswer.js'
-import { sendMessage } from "./sendMessage.js"
+import { sendMessage } from "./SendMessage.js"
 import { sendVoice } from './sendVoice.js'
 
 dotenv.config()

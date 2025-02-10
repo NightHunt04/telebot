@@ -78,3 +78,5 @@ app.post('*', async (req, res) => {
 // https://api.telegram.org/bot7169770949:AAH4ZTtSk6658kT2wBVrKyWIgtq5rDhKRhk/deleteWebhook?drop_pending_updates=true
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+
+export default app

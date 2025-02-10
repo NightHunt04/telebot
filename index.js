@@ -44,9 +44,6 @@ app.post('*', async (req, res) => {
             const fileId = message.voice.file_id
             const chatId = message.chat.id
             await getVoice(fileId, chatId)
-            // const userMessage = await transcriptVoice(fileId)
-            // const answer = await generateAnswer(userMessage)
-            // await sendMessage(message.chat.id, answer)
             return res.send('ok').status(200)
         }
     }
